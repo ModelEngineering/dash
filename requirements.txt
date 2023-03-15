@@ -1,0 +1,8 @@
+dash   
+dash-html-components                                         
+dash-core-components                                     
+plotly
+numpy
+matplotlib
+pandas
+tellurium
