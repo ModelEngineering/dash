@@ -8,6 +8,7 @@ from dash.dependencies import Input, Output
 
 
 app = dash.Dash()
+application = app.server
 
 df = px.data.stocks()
 
@@ -18,9 +19,9 @@ app.layout = html.Div(id = 'parent', children = [
 
         dcc.Dropdown( id = 'dropdown',
         options = [
-            {'label':'Google', 'value':'GOOG' },
-            {'label': 'Apple', 'value':'AAPL'},
-            {'label': 'Amazon', 'value':'AMZN'},
+            {'label':'GGoogle', 'value':'GOOG' },
+            {'label': 'AApple', 'value':'AAPL'},
+            {'label': 'AAmazon', 'value':'AMZN'},
             ],
         value = 'GOOG'),
         dcc.Graph(id = 'bar_plot')

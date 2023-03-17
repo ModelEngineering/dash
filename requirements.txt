@@ -1,8 +1,12 @@
 dash   
 dash-html-components                                         
 dash-core-components                                     
+h5py
+pathlib
 plotly
 numpy
 matplotlib
 pandas
+requests
 tellurium
+time

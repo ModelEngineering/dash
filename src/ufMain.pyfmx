@@ -1,0 +1,250 @@
+object frmMain: TfrmMain
+  Left = 0
+  Top = 0
+  Caption = 'Biosimulations Browser'
+  ClientHeight = 680
+  ClientWidth = 1074
+  Position = ScreenCenter
+  FormFactor.Width = 320
+  FormFactor.Height = 480
+  FormFactor.Devices = [Desktop]
+  DesignerMasterStyle = 0
+  object Layout1: TLayout
+    Align = Top
+    Size.Width = 1074.000000000000000000
+    Size.Height = 50.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 0
+    object btnGetProjects: TButton
+      Position.X = 17.000000000000000000
+      Position.Y = 20.000000000000000000
+      Size.Width = 96.000000000000000000
+      Size.Height = 22.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+      Text = 'Get Projects'
+    end
+    object lblMessage: TLabel
+      StyledSettings = [Family, Style, FontColor]
+      Position.X = 694.000000000000000000
+      Position.Y = 20.000000000000000000
+      Size.Width = 372.000000000000000000
+      Size.Height = 22.000000000000000000
+      Size.PlatformDefault = False
+      TextSettings.Font.Size = 16.000000000000000000
+      TextSettings.HorzAlign = Trailing
+      Text = 'lblMessage'
+      TabOrder = 1
+    end
+  end
+  object Layout2: TLayout
+    Align = Bottom
+    Margins.Left = 5.000000000000000000
+    Margins.Top = 5.000000000000000000
+    Margins.Right = 5.000000000000000000
+    Margins.Bottom = 5.000000000000000000
+    Position.X = 5.000000000000000000
+    Position.Y = 625.000000000000000000
+    Size.Width = 1064.000000000000000000
+    Size.Height = 50.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 1
+    object LabelProject: TLabel
+      Position.X = 16.000000000000000000
+      Position.Y = 16.000000000000000000
+      Size.Width = 289.000000000000000000
+      Size.Height = 17.000000000000000000
+      Size.PlatformDefault = False
+      Text = 'None'
+      TabOrder = 0
+    end
+  end
+  object Layout3: TLayout
+    Align = Left
+    Position.Y = 50.000000000000000000
+    Size.Width = 17.000000000000000000
+    Size.Height = 570.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 2
+  end
+  object Layout4: TLayout
+    Align = Client
+    Size.Width = 1057.000000000000000000
+    Size.Height = 570.000000000000000000
+    Size.PlatformDefault = False
+    TabOrder = 3
+    object listBoxProjects: TListBox
+      Align = Left
+      Size.Width = 233.000000000000000000
+      Size.Height = 570.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 0
+      DisableFocusEffect = True
+      DefaultItemStyles.ItemStyle = ''
+      DefaultItemStyles.GroupHeaderStyle = ''
+      DefaultItemStyles.GroupFooterStyle = ''
+      Viewport.Width = 229.000000000000000000
+      Viewport.Height = 566.000000000000000000
+      object ShadowEffect6: TShadowEffect
+        Distance = 1.000000000000000000
+        Direction = 45.000000000000000000
+        Softness = 0.300000011920929000
+        Opacity = 0.600000023841857900
+        ShadowColor = claDarkgray
+      end
+    end
+    object Splitter1: TSplitter
+      Align = Left
+      Cursor = crHSplit
+      MinSize = 20.000000000000000000
+      Position.X = 233.000000000000000000
+      Size.Width = 8.000000000000000000
+      Size.Height = 570.000000000000000000
+      Size.PlatformDefault = False
+    end
+    object Layout5: TLayout
+      Align = Client
+      Size.Width = 816.000000000000000000
+      Size.Height = 570.000000000000000000
+      Size.PlatformDefault = False
+      TabOrder = 2
+      object pnlProjectButtons: TLayout
+        Align = Top
+        Size.Width = 816.000000000000000000
+        Size.Height = 42.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 1
+        object btnGetProjectDetails: TButton
+          Position.X = 16.000000000000000000
+          Position.Y = 12.000000000000000000
+          Size.Width = 120.000000000000000000
+          Size.Height = 22.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 0
+          Text = 'Get Project Details'
+        end
+      end
+      object Layout6: TLayout
+        Align = Top
+        Position.Y = 42.000000000000000000
+        Size.Width = 816.000000000000000000
+        Size.Height = 183.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 2
+        object listBoxFiles: TListBox
+          Align = Left
+          Margins.Top = 5.000000000000000000
+          Margins.Right = 5.000000000000000000
+          Margins.Bottom = 5.000000000000000000
+          Position.Y = 5.000000000000000000
+          Size.Width = 265.000000000000000000
+          Size.Height = 173.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 0
+          DisableFocusEffect = True
+          DefaultItemStyles.ItemStyle = ''
+          DefaultItemStyles.GroupHeaderStyle = ''
+          DefaultItemStyles.GroupFooterStyle = ''
+          Viewport.Width = 261.000000000000000000
+          Viewport.Height = 169.000000000000000000
+        end
+        object ShadowEffect1: TShadowEffect
+          Distance = 1.000000000000000000
+          Direction = 45.000000000000000000
+          Softness = 0.300000011920929000
+          Opacity = 0.600000023841857900
+          ShadowColor = claDarkgray
+        end
+        object Memo1: TMemo
+          Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
+          DataDetectorTypes = []
+          Align = Client
+          Margins.Left = 5.000000000000000000
+          Margins.Top = 5.000000000000000000
+          Margins.Right = 5.000000000000000000
+          Margins.Bottom = 5.000000000000000000
+          Size.Width = 536.000000000000000000
+          Size.Height = 173.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 1
+          Viewport.Width = 532.000000000000000000
+          Viewport.Height = 169.000000000000000000
+          object ShadowEffect2: TShadowEffect
+            Distance = 1.000000000000000000
+            Direction = 45.000000000000000000
+            Softness = 0.300000011920929000
+            Opacity = 0.600000023841857900
+            ShadowColor = claDarkgray
+          end
+          object ShadowEffect5: TShadowEffect
+            Distance = 3.000000000000000000
+            Direction = 45.000000000000000000
+            Softness = 0.300000011920929000
+            Opacity = 0.600000023841857900
+            ShadowColor = claBlack
+          end
+        end
+      end
+      object Layout7: TLayout
+        Align = Client
+        Margins.Top = 5.000000000000000000
+        Margins.Right = 5.000000000000000000
+        Size.Width = 811.000000000000000000
+        Size.Height = 340.000000000000000000
+        Size.PlatformDefault = False
+        TabOrder = 3
+        object Splitter2: TSplitter
+          Align = Right
+          Cursor = crHSplit
+          MinSize = 20.000000000000000000
+          Position.X = 504.000000000000000000
+          Size.Width = 8.000000000000000000
+          Size.Height = 340.000000000000000000
+          Size.PlatformDefault = False
+        end
+        object moDisplay: TMemo
+          Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
+          DataDetectorTypes = []
+          Align = Client
+          Size.Width = 504.000000000000000000
+          Size.Height = 340.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 0
+          Viewport.Width = 500.000000000000000000
+          Viewport.Height = 336.000000000000000000
+          object ShadowEffect3: TShadowEffect
+            Distance = 1.000000000000000000
+            Direction = 45.000000000000000000
+            Softness = 0.300000011920929000
+            Opacity = 0.600000023841857900
+            ShadowColor = claDarkgray
+          end
+        end
+        object Panel1: TPanel
+          Align = Right
+          Position.X = 512.000000000000000000
+          Size.Width = 299.000000000000000000
+          Size.Height = 340.000000000000000000
+          Size.PlatformDefault = False
+          TabOrder = 2
+          object ShadowEffect4: TShadowEffect
+            Distance = 1.000000000000000000
+            Direction = 45.000000000000000000
+            Softness = 0.300000011920929000
+            Opacity = 0.600000023841857900
+            ShadowColor = claDarkgray
+          end
+          object imageControl: TImage
+            MultiResBitmap = <
+              item
+              end>
+            Align = Client
+            Size.Width = 299.000000000000000000
+            Size.Height = 340.000000000000000000
+            Size.PlatformDefault = False
+          end
+        end
+      end
+    end
+  end
+end
