@@ -1,6 +1,7 @@
 dash   
 dash-html-components                                         
 dash-core-components                                     
+dash-bootstrap-components
 h5py
 pathlib
 plotly
