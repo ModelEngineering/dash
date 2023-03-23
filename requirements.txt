@@ -3,11 +3,17 @@ dash-html-components
 dash-core-components                                     
 dash-bootstrap-components
 h5py
+htmldom
 pathlib
 plotly
 numpy
 matplotlib
+openai
 pandas
 requests
+requests-html
+selenium
 tellurium
 time
+webdriver
+whoosh

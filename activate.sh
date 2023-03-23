@@ -1,4 +1,3 @@
 #!/bin/bash
-PTYHONPATH=`pwd`
-export PYTHONPATH
+export PYTHONPATH=`pwd`:$PYTHONPATH
 source dash/bin/activate
