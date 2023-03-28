@@ -53,14 +53,14 @@ class Searcher(object):
             ])
         return response.choices[0]['message']["content"]
 
-    def search(self, search_query, index_dir=cn.INDEX_DIR):
+    def search(self, query, index_dir=cn.INDEX_DIR):
         """
         Searches the index for the terms. Searching includes
             OR, AND, ~<n> (number of replacement terms)
 
         Parameters
         ----------
-        search_query: str
+        query: str
         index_dir: str (path to index directory)
 
         Returns
@@ -72,7 +72,7 @@ class Searcher(object):
         schema = Schema(title=TEXT(stored=True), path=ID(stored=True), content=TEXT)
         indexer = index.open_dir(index_dir)
         with indexer.searcher() as searcher:
-            query = QueryParser("content", indexer.schema).parse(search_query)
+            query = QueryParser("content", indexer.schema).parse(query)
             results = searcher.search(query, limit=None)  # Get all search results
             parser.add_plugin(qparser.FuzzyTermPlugin())  # Allow fuzzy search
         #
