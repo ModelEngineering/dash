@@ -15,5 +15,6 @@ requests-html
 selenium
 tellurium
 time
+typing
 webdriver
 whoosh
