@@ -10,6 +10,7 @@ import pandas as pd
 import whoosh
 from whoosh.index import create_in
 from whoosh.fields import *
+from whoosh import qparser
 from whoosh.qparser import QueryParser
 import whoosh.index as index
 
@@ -21,6 +22,7 @@ if os.path.isfile(cn.ABSTRACT_FILE):
     ABSTRACT_DF = pd.read_csv(cn.ABSTRACT_FILE)
     ABSTRACT_DF.index = ABSTRACT_DF[cn.ID]
     ABSTRACT_DF = util.cleanDF(ABSTRACT_DF)
+    ABSTRACTS = [v for v in ABSTRACT_DF.index]
 else:
     ABSTRACT_DF = None
 
@@ -53,14 +55,14 @@ class Searcher(object):
             ])
         return response.choices[0]['message']["content"]
 
-    def search(self, query, index_dir=cn.INDEX_DIR):
+    def search(self, query_str, index_dir=cn.INDEX_DIR):
         """
         Searches the index for the terms. Searching includes
             OR, AND, ~<n> (number of replacement terms)
 
         Parameters
         ----------
-        query: str
+        query_str: str
         index_dir: str (path to index directory)
 
         Returns
@@ -71,11 +73,11 @@ class Searcher(object):
             raise ValueError("Must build %s before doing search" % cn.ABSTRACT_FILE)
         schema = Schema(title=TEXT(stored=True), path=ID(stored=True), content=TEXT)
         indexer = index.open_dir(index_dir)
-        with indexer.searcher() as searcher:
-            query = QueryParser("content", indexer.schema).parse(query)
-            results = searcher.search(query, limit=None)  # Get all search results
-            parser.add_plugin(qparser.FuzzyTermPlugin())  # Allow fuzzy search
+        with indexer.searcher() as this_searcher:
+            parser = QueryParser("content", indexer.schema)
+            parser.add_plugin(qparser.FuzzyTermPlugin())
+            query = parser.parse(query_str)
+            results = this_searcher.search(query, limit=None)  # Get all search results
         #
-        project_ids = [r.loc[i, cn.ID] for i, r in ABSTRACT_DF.iterrows()
-              if i in results.docs()]
+        project_ids = [ABSTRACTS[n] for n in results.docs()]
         return project_ids

@@ -1,3 +1,4 @@
+import copy
 import pandas as pd
 
 def cleanDF(df):
@@ -19,3 +20,31 @@ def cleanDF(df):
             if name in column:
                 del new_df[column]
     return new_df
+
+def indexNested(struct, keys, default=None):
+        """
+        Reliably indexes a nested structure of lists and dictionaries.
+
+        Parameters
+        ----------
+        struct: nested structure of dictionaries, lists
+        keys: list of indices/keys
+        default: value to return if index fails
+
+        Returns
+        -------
+        object
+        """
+        cur_struct = copy.deepcopy(struct)
+        for key in keys:
+            try:
+                cur_struct = cur_struct[key]
+            except (TypeError, KeyError, IndexError):
+                return default
+        #
+        return cur_struct
+
+def setValue(value, default):
+    if value is None:
+        return default
+    return value
