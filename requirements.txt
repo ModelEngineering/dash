@@ -4,6 +4,7 @@ dash-core-components
 dash-bootstrap-components
 h5py
 htmldom
+jupyterlab
 pathlib
 plotly
 numpy

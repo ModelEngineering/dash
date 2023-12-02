@@ -36,9 +36,9 @@ class TestAbstractScraper(unittest.TestCase):
     def testSearch(self):
         if IGNORE_TEST:
             return
-        result_both = self.searcher.search("glycolysis AND pentose")
-        result_glc = self.searcher.search("glycolysis")
-        result_pen = self.searcher.search("pentose")
+        result_both, _ = self.searcher.search("glycolysis AND pentose")
+        result_glc, _ = self.searcher.search("glycolysis")
+        result_pen, _ = self.searcher.search("pentose")
         predicted_both = set(result_glc).intersection(result_pen)
         diff = predicted_both.symmetric_difference(result_both)
         self.assertEqual(len(diff), 0)

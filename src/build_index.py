@@ -11,7 +11,8 @@ PROJECT_URL = "%s/projects" % API_URL
 ABSTRACT_DF = pd.read_csv(cn.ABSTRACT_FILE)
 
 # Initialize the indexer
-schema = Schema(title=TEXT(stored=True), path=ID(stored=True), content=TEXT)
+schema = Schema(title=TEXT(stored=True), path=ID(stored=True),
+      content=TEXT(stored=True))
 ix = create_in(cn.INDEX_DIR, schema)
 writer = ix.writer()
 

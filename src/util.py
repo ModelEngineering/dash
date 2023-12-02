@@ -48,3 +48,32 @@ def setValue(value, default):
     if value is None:
         return default
     return value
+
+def removeAngleBrackets(text):
+        """
+        Removes angle bracket sequences, such as in HTML, XML. For
+        example:
+            hello <b class=x other=y>this is text</b> goodby
+        becomes
+            hello this is text goodby
+        Cannot handle nested brackets.
+
+        Parameters
+        ----------
+        text: str
+
+        Returns
+        -------
+        str
+        """
+        LEFT_BRACKET = "<"
+        RIGHT_BRACKET = ">"
+        #
+        split_text = text.split(RIGHT_BRACKET)
+        new_text = ""
+        for segment in split_text:
+            pos = segment.find(LEFT_BRACKET)
+            if pos >= 0:
+                new_text += segment[:pos]
+        #
+        return new_text

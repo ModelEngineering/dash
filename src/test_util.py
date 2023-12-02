@@ -14,7 +14,7 @@ IS_PLOT = False
 #############################
 class TestFunctions(unittest.TestCase):
 
-    def testindexNested(self):
+    def testIndexNested(self):
         if IGNORE_TEST:
             return
         struct = [dict(a=[1, 2, 3], b=4), 3]
@@ -27,6 +27,13 @@ class TestFunctions(unittest.TestCase):
         #
         result = util.indexNested(struct, ["a", 0])
         self.assertIsNone(result)
+
+    def testRemoveAngleBrackets(self):
+        if IGNORE_TEST:
+            return
+        text = "hello <b class=x other=y>this is text</b> goodby"
+        new_text = util.removeAngleBrackets(text)
+        self.assertEqual(new_text, "hello this is text")
 
 
 if __name__ == '__main__':

@@ -16,7 +16,7 @@ import whoosh.index as index
 
 
 # The API Key must be updated periodically
-API_KEY = "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"
+API_KEY = "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"
 MODEL_ENGINE = "gpt-3.5-turbo"
 if os.path.isfile(cn.ABSTRACT_FILE):
     ABSTRACT_DF = pd.read_csv(cn.ABSTRACT_FILE)
@@ -67,17 +67,18 @@ class Searcher(object):
 
         Returns
         -------
-        list-str (list of project ids)
+        list-str (list of project ids), list-results
         """
         if ABSTRACT_DF is None:
             raise ValueError("Must build %s before doing search" % cn.ABSTRACT_FILE)
-        schema = Schema(title=TEXT(stored=True), path=ID(stored=True), content=TEXT)
+        schema = Schema(title=TEXT(stored=True), path=ID(stored=True),
+              content=TEXT(stored=True))
         indexer = index.open_dir(index_dir)
-        with indexer.searcher() as this_searcher:
-            parser = QueryParser("content", indexer.schema)
-            parser.add_plugin(qparser.FuzzyTermPlugin())
-            query = parser.parse(query_str)
-            results = this_searcher.search(query, limit=None)  # Get all search results
+        this_searcher = indexer.searcher()
+        parser = QueryParser("content", indexer.schema)
+        #parser.add_plugin(qparser.FuzzyTermPlugin())
+        query = parser.parse(query_str)
+        results = this_searcher.search(query, limit=None)  # Get all search results
         #
-        project_ids = [ABSTRACTS[n] for n in results.docs()]
-        return project_ids
+        project_ids = [r["title"] for r in results]
+        return project_ids, results

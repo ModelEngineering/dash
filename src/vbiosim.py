@@ -1,8 +1,13 @@
 '''A viewer for information on Biosimulations'''
+"""
+TO DO
+1. Highlights are picking up title, not abstract.
+"""
 
 
 import src.constants as cn
 import src.util as util
+from src.searcher import Searcher
 
 import dash
 from dash import html
@@ -21,6 +26,17 @@ from whoosh.qparser import QueryParser
 from htmldom import htmldom
 from requests_html import HTMLSession
 from selenium import webdriver
+
+"""
+Get the fiels in a run
+https://api.biosimulations.org/files/<runid>
+# Model for the runid
+https://storage.googleapis.com/files.biosimulations.org/simulations/61fea483f499ccf25faafc4d/contents/model.xml
+# Simulation results
+https://storage.googleapis.com/files.biosimulations.org/simulations/61fea483f499ccf25faafc4d/contents/expected-results.json
+# Simulation data
+https://storage.googleapis.com/files.biosimulations.org/simulations/61fea483f499ccf25faafc4d/contents/reports.h5
+"""
 
 ######## Constants #######
 ABSTRACT_DF = pd.read_csv(cn.ABSTRACT_FILE)
@@ -44,10 +60,12 @@ INVERSE_PROJECT_DCT = {v: k for k, v in PROJECT_DCT.items()}
 TITLE_DROPDOWN_DCT = {d: d if len(d) <= MAX_TITLE_LENGTH
       else "%s..." % d[:MAX_TITLE_LENGTH] for d in PROJECT_TITLES}
 TITLE_DROPDOWNS = list(TITLE_DROPDOWN_DCT.values())
+INVERSE_TITLE_DROPDOWN_DCT = {v: k for k, v in TITLE_DROPDOWN_DCT.items()}
 PAPER_URL = "https://www.google.com/search?q=Mathematical%20modeling%20of%20heat%20shock%20protein%20synthesis%20in%20response%20to%20temperature%20change"
 PLACEHOLDER = "placeholder"  # Used if there is no output in a callback
 TITLE_RAD = "title"
 ID_RAD = "project ID"
+SEARCHER = Searcher()
 
 ####### State Object ########
 class OptionState():
@@ -83,14 +101,20 @@ project_col = dbc.Col(dbc.Row([
             value=ID_RAD,
             labelStyle={'display': 'block'}
       ),
-      html.H2("Select (%d)" % len(PROJECT_IDS)),
+      html.H2("Select (%d)" % len(PROJECT_IDS), id='article_count'),
       html.P(children=dropdown_comp, id='dropdown_loc'),
       # Used to handle callbacks without output
       html.P(id=PLACEHOLDER)
       ])
 )
+space_col = dbc.Col(dbc.Row([
+      html.P(" ")
+      ])
+)
 search_col = dbc.Col(dbc.Row([
-      dbc.Input(id="search", placeholder="Enter search terms ...", type="text"),
+      dbc.Input(id="search", placeholder="Enter search terms ...", type="text",
+            style={'textalign': 'center'},
+      ),
       ])
 )
 abstract_col = dbc.Col(dbc.Row([
@@ -156,8 +180,9 @@ app.layout = html.Div([
         justify="center", align="center"
     ),
     dbc.Row([
-          search_col,
-          html.Div(style={"margin-left": "25px"}),
+          space_col,
+          search_col, html.Div(style={"margin-left": "25px"}),
+          space_col,
           ]
     ),
     dbc.Row([
@@ -186,8 +211,7 @@ app.layout = html.Div([
 
 ######### CALL BACKS ############
 #-------- HELPERS -----------#
-def calculateAbstractText(project_id):
-    # TODO: class that decomdes project summary
+def calculateAbstractText(project_id, search_result=None):
     summary_url = "%s/projects/%s/summary" % (API_URL, project_id)
     response = requests.get(summary_url)
     null = None
@@ -198,8 +222,15 @@ def calculateAbstractText(project_id):
           "No URI found.")
     # Abstract and citation
     if project_id in ABSTRACT_DF.index:
-        # FIXME: Wrong types in ABSTRACT_DF
+        # FIXME: search_result does not match the project_id
         abstract = ABSTRACT_DF.loc[project_id, "abstract"]
+        if search_result is not None:
+            highlights = search_result.highlights("content")
+            highlights = util.removeAngleBrackets(highlights)
+            splits = highlights.split("...")
+            for split in splits:
+                bold_split = "**" + split + "**"
+                abstract = abstract.replace(split, bold_split)
         citation = ABSTRACT_DF.loc[project_id, "citation"]
         if not isinstance(abstract, str):
             abstract = abstract.values[0]
@@ -216,47 +247,85 @@ def calculateAbstractText(project_id):
 
 #-------- CALLBACKS -----------#
 @app.callback([Output(component_id='Abstract', component_property= CHILDREN),
-              Output(component_id='dropdown_loc', component_property= 'children')],
+              Output(component_id='dropdown_loc', component_property= 'children'),
+              Output(component_id='article_count', component_property= 'children'),
+              ],
               [Input(component_id='dropdown1', component_property= 'value'),
               Input(component_id='input-radio-button', component_property= 'value'),
+              Input(component_id='search', component_property= 'value'),
               ])
-def updateAbstract(selection, radio_value):
-    # FIXME: Dropdown doesn't change immediately
-    if selection in PROJECT_IDS:
-        project_id = selection
-        is_projectid = True
+def updateAbstractAndDropdown(dropdown1_value, radio_value, search_text):
+    """
+    Inputs have the follow effects on outputs:
+       dropdown1_value (dropdown1_value): updates the abstract
+       input-radio-button: Determines the options for dropdown
+       search: selects a subset of options for dropdown
+    """
+    # Calculate the subset of project_ids based on search_text
+    if (search_text is None) or (len(search_text) < 3):
+        permitted_ids = list(PROJECT_IDS)
+        search_result_dct = None
     else:
-        # Find the title
-        rev_dct = {v: k for k, v in TITLE_DROPDOWN_DCT.items()}
-        title = rev_dct[selection]
-        project_id = INVERSE_PROJECT_DCT[title]
-        is_projectid = False
-    if radio_value == TITLE_RAD:
-        dropdowns = list(TITLE_DROPDOWNS)
-        if is_projectid:
-            # Change to title
-            cur_title = PROJECT_DCT[project_id]
-            new_selection = TITLE_DROPDOWN_DCT[cur_title]
+        permitted_ids, search_results = list(SEARCHER.search(search_text + "*"))
+        search_result_dct = {p: r for p, r in zip(permitted_ids, search_results)}
+    # Classify the current set of dropdown options and find project_id
+    if dropdown1_value in PROJECT_IDS:
+        # Dropdown has project IDs
+        is_projectid_option = True
+        project_id = dropdown1_value
+    else:
+        # Dropdown has project titles
+        is_projectid_option = False
+        if len(dropdown1_value) == 0:
+            project_id = PROJECT_IDS[0]
         else:
-           # Should already be title
-           new_selection = selection
+            # Extract the project ID from the title
+            if dropdown1_value in INVERSE_TITLE_DROPDOWN_DCT.keys():
+                full_title = INVERSE_TITLE_DROPDOWN_DCT[dropdown1_value]
+                project_id = INVERSE_PROJECT_DCT[full_title]
+            elif dropdown1_value in INVERSE_TITLE_DROPDOWN_DCT.keys():
+                project_id = INVERSE_PROJECT_DCT[dropdown1_value]
+            else:
+                # Can't find this ID. Use the first permitted one.
+                project_id = PROJECT_IDS[0]
+    # Handle project_id not in the permitted list
+    if not project_id in permitted_ids:
+        if len(permitted_ids) > 0:
+            project_id = permitted_ids[0]
+        else:
+            project_id = None
+    # Construct the search result
+    if search_result_dct is None:
+        search_result = None
     else:
-        dropdowns = PROJECT_IDS
-        new_selection = project_id
-    abstract = calculateAbstractText(project_id)
-    #dropdown_comp.value = new_selection
-    dropdown_comp = makeDropdown(options=dropdowns, value=new_selection)
-    return abstract, dropdown_comp
+        search_result = search_result_dct[project_id]
+    # Calculate the dropdown options
+    if radio_value == TITLE_RAD:
+        permitted_titles = [PROJECT_DCT[p] for p in permitted_ids]
+        dropdown_options = [TITLE_DROPDOWN_DCT[t] for t in permitted_titles]
+        if project_id is not None:
+            new_dropdown1_value = PROJECT_DCT[project_id]
+        else:
+            new_dropdown1_value = ""
+    else:
+        dropdown_options = permitted_ids
+        if project_id is not None:
+            new_dropdown1_value = project_id
+        else:
+            new_dropdown1_value = ""
+    # Generate the return values
+    abstract = calculateAbstractText(project_id, search_result=search_result)
+    dropdown_comp = makeDropdown(options=dropdown_options, value=new_dropdown1_value)
+    article_count = "Select (%d)" % len(permitted_ids)
+    return abstract, dropdown_comp, article_count
 
 @app.callback(Output(component_id='Details', component_property= CHILDREN),
               [Input(component_id='dropdown1', component_property= 'value')])
 def getProjectDetails(project_id):
-    return ""
     summary_url = "%s/projects/%s/summary" % (API_URL, project_id)
     response = requests.get(summary_url)
     null = None
     dct = eval(response.content.decode())
-    abstract = dct["simulationRun"]["metadata"][0]["abstract"]
     result = str(yaml.dump(json.loads(response.content), default_flow_style=False))
     return result
 
